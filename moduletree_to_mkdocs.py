@@ -5,7 +5,7 @@ from types import FunctionType, ModuleType
 
 
 def moduletree(module: ModuleType):
-    tree = {"children": [], "members": [], "module": module.__name__}
+    tree = {"module": module.__name__, "members": [], "children": []}
     for name, member in getmembers(module):
         if member == module:
             continue
@@ -28,7 +28,6 @@ def branch_to_lines(tree, level=0):
         headername = '.'.join(headername.split('.')[1:])
     lines = [f"{'#' * min(level + 1, 3)} {headername}\n"]
     lines += [f"::: {tree['module']}"]
-    lines += [f"::: {tree['module']}.{m}" for m in tree["members"]]
     lines.append('\n')
     lines += chain(
         *[
