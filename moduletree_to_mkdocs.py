@@ -28,7 +28,8 @@ def branch_to_lines(tree, level=0):
         headername = '.'.join(headername.split('.')[1:])
     lines = [f"{'#' * min(level + 1, 3)} {headername}\n"]
     lines += [f"::: {tree['module']}"]
-    lines.append('\n')
+    lines.append("    options:")
+    lines.append(f"        heading_level: {min(level + 1, 3)+1}\n")
     lines += chain(
         *[
             branch_to_lines(c, level + 1) for c in tree["children"]
@@ -41,3 +42,9 @@ def branch_to_lines(tree, level=0):
 def write_to_markdown(lines, outpath):
     with open(outpath, "w") as stream:
         stream.write(re.sub('\n\n+', '\n\n', "\n".join(lines)))
+
+
+def write_api(module: ModuleType, outpath, level=0):
+    tree = moduletree(module)
+    lines = branch_to_lines(tree, level)
+    write_to_markdown(lines, outpath)
