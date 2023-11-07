@@ -78,23 +78,6 @@ def moduletree(root_module, gitignore=False):
     return modules
 
 
-def branch_to_lines(tree, level=0):
-    headername = tree["module"]
-    if '.' in headername:
-        headername = '.'.join(headername.split('.')[1:])
-    lines = [f"{'#' * min(level + 1, 3)} {headername}\n"]
-    lines += [f"::: {tree['module']}"]
-    lines.append("    options:")
-    lines.append(f"        heading_level: {min(level + 1, 3)+1}\n")
-    lines += chain(
-        *[
-            branch_to_lines(c, level + 1) for c in tree["children"]
-        ]
-    )
-    lines.append("\n")
-    return lines
-
-
 def modules_to_lines(modules):
     lines = []
     for m in sorted(modules.values(), key=lambda m: m['name']):
@@ -104,8 +87,10 @@ def modules_to_lines(modules):
         lines += [
             f"{'#' * min(level + 1, 3)} {headername}\n",
             f"::: {m['name']}",
-            "\n\n"
         ]
+        lines.append("    options:")
+        lines.append(f"        heading_level: {min(level + 1, 3) + 1}\n")
+        lines.append("\n")
     return lines
 
 
@@ -114,7 +99,7 @@ def write_to_markdown(lines, outpath):
         stream.write(re.sub('\n\n+', '\n\n', "\n".join(lines)))
 
 
-def write_api(module: ModuleType, outpath, level=0):
-    tree = moduletree(module)
-    lines = branch_to_lines(tree, level)
+def write_api(module: ModuleType, outpath):
+    modules = moduletree(module)
+    lines = modules_to_lines(modules)
     write_to_markdown(lines, outpath)
