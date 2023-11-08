@@ -9,7 +9,6 @@ write_to_markdown(ml, 'markdown_skeleton.md')
 
 from importlib import import_module
 from inspect import getmembers
-from itertools import chain
 import os
 from pathlib import Path
 import re
@@ -99,7 +98,7 @@ def write_to_markdown(lines, outpath):
         stream.write(re.sub('\n\n+', '\n\n', "\n".join(lines)))
 
 
-def write_api(module: ModuleType, outpath):
-    modules = moduletree(module)
+def write_api(module: ModuleType, outpath, gitignore=True):
+    modules = moduletree(module, gitignore)
     lines = modules_to_lines(modules)
     write_to_markdown(lines, outpath)
